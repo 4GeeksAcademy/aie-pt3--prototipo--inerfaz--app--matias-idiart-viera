@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Obsidian AI - Chat Interface</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-fixed": "#ede9fe",
+                        "on-secondary": "#09090b",
+                        "tertiary-container": "#065f46",
+                        "surface-container-lowest": "#09090b",
+                        "inverse-surface": "#fafafa",
+                        "on-secondary-container": "#a1a1aa",
+                        "on-error-container": "#fca5a5",
+                        "secondary-fixed": "#a1a1aa",
+                        "background": "#09090b",
+                        "on-tertiary-fixed": "#003318",
+                        "inverse-on-surface": "#09090b",
+                        "error-container": "#3b1111",
+                        "on-surface-variant": "#a1a1aa",
+                        "secondary-container": "#27272a",
+                        "surface-container-highest": "#1e1e22",
+                        "on-tertiary-container": "#bbf7d0",
+                        "on-background": "#fafafa",
+                        "surface-container": "#121215",
+                        "on-primary-fixed": "#2e1065",
+                        "on-surface": "#fafafa",
+                        "on-error": "#1a0000",
+                        "primary-fixed-dim": "#c4b5fd",
+                        "on-tertiary": "#001a12",
+                        "surface-container-high": "#18181b",
+                        "tertiary": "#34d399",
+                        "primary-container": "#7c3aed",
+                        "outline": "#52525b",
+                        "on-secondary-fixed-variant": "#3f3f46",
+                        "surface-dim": "#0c0c0f",
+                        "surface-bright": "#18181b",
+                        "surface": "#0c0c0f",
+                        "on-secondary-fixed": "#18181b",
+                        "tertiary-fixed-dim": "#6ee7b7",
+                        "on-tertiary-fixed-variant": "#047857",
+                        "on-primary-container": "#ede9fe",
+                        "inverse-primary": "#5b21b6",
+                        "secondary-fixed-dim": "#71717a",
+                        "tertiary-fixed": "#bbf7d0",
+                        "surface-tint": "#a78bfa",
+                        "on-primary-fixed-variant": "#5b21b6",
+                        "surface-variant": "#18181b",
+                        "secondary": "#71717a",
+                        "primary": "#a78bfa",
+                        "on-primary": "#0a0012",
+                        "error": "#ef4444",
+                        "outline-variant": "#27272a",
+                        "surface-container-low": "#0f0f12"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {},
+                    "fontFamily": {
+                        "headline": ["Geist", "sans-serif"],
+                        "display": ["Geist", "sans-serif"],
+                        "body": ["Geist", "sans-serif"],
+                        "label": ["Geist", "sans-serif"]
+                    },
+                    "fontSize": {}
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Geist', sans-serif;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        /* Custom scrollbar for near-black theme */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #09090b;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #27272a;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #52525b;
+        }
+
+        .typing-indicator span {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background-color: #a78bfa;
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both;
+            margin: 0 2px;
+        }
+
+        .typing-indicator span:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .typing-indicator span:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            80%,
+            100% {
+                transform: scale(0);
+            }
+
+            40% {
+                transform: scale(1);
+            }
+        }
+
+        pre {
+            background-color: #09090b;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid #27272a;
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: monospace;
+            color: #fafafa;
+        }
+    </style>
+</head>
+
+<body class="bg-background text-on-surface h-screen w-screen overflow-hidden flex flex-col font-body antialiased">
+    <!-- TopAppBar -->
+    <header
+        class="bg-background dark:bg-background fixed top-0 w-full border-b border-outline-variant flex justify-between items-center px-4 h-14 w-full z-50">
+        <div class="flex items-center gap-3">
+            <span class="text-xl font-headline font-black tracking-tighter text-on-surface">Obsidian AI</span>
+            <span
+                class="px-2 py-0.5 rounded text-xs font-mono bg-surface-container-highest border border-outline-variant text-primary ml-2">Llama-3-70b</span>
+        </div>
+        <div class="flex items-center gap-4">
+            <button
+                class="text-on-surface-variant hover:text-primary transition-colors active:scale-95 transition-transform p-2 rounded-md hover:bg-surface-container">
+                <span class="material-symbols-outlined" data-icon="settings">settings</span>
+            </button>
+            <button
+                class="text-on-surface-variant hover:text-primary transition-colors active:scale-95 transition-transform p-2 rounded-md hover:bg-surface-container">
+                <span class="material-symbols-outlined" data-icon="terminal">terminal</span>
+            </button>
+            <button
+                class="bg-primary hover:bg-primary-fixed-dim text-on-primary font-bold py-1.5 px-4 rounded transition-colors text-sm flex items-center gap-2">
+                <span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+                New Chat
+            </button>
+        </div>
+    </header>
+    <div class="flex flex-1 pt-14 h-full overflow-hidden">
+        <!-- SideNavBar / Metrics Panel -->
+        <aside
+            class="hidden md:flex flex-col h-full w-64 bg-surface-container dark:bg-surface-container border-r border-outline-variant flex flex-col h-full pt-6 pb-4 px-3 flex-shrink-0 z-40">
+            <div class="mb-8 px-2">
+                <h2 class="text-lg font-headline font-bold text-on-surface tracking-tight mb-1">Auditoría de Consumo
+                </h2>
+                <p class="text-xs text-on-surface-variant font-mono">Real-time Performance</p>
+            </div>
+            <!-- Navigation Tabs -->
+            <nav class="space-y-1 mb-8 flex-1">
+                <a class="flex items-center gap-3 px-3 py-2 rounded-md text-on-surface-variant hover:bg-surface-container-highest hover:text-on-surface transition-all duration-150 text-sm font-medium"
+                    href="#">
+                    <span class="material-symbols-outlined" data-icon="history">history</span>
+                    History
+                </a>
+                <a class="flex items-center gap-3 px-3 py-2 rounded-md text-on-surface-variant hover:bg-surface-container-highest hover:text-on-surface transition-all duration-150 text-sm font-medium"
+                    href="#">
+                    <span class="material-symbols-outlined" data-icon="smart_toy">smart_toy</span>
+                    Models
+                </a>
+                <a class="flex items-center gap-3 px-3 py-2 rounded-md text-on-surface-variant hover:bg-surface-container-highest hover:text-on-surface transition-all duration-150 text-sm font-medium"
+                    href="#">
+                    <span class="material-symbols-outlined" data-icon="vpn_key">vpn_key</span>
+                    API Keys
+                </a>
+                <a class="flex items-center gap-3 px-3 py-2 rounded-md bg-secondary-container text-primary border-r-2 border-primary transition-all duration-150 text-sm font-medium"
+                    href="#">
+                    <span class="material-symbols-outlined" data-icon="monitoring">monitoring</span>
+                    Usage
+                </a>
+            </nav>
+            <!-- Metrics Displays -->
+            <div class="space-y-4 mb-6 px-2">
+                <div class="bg-surface-container-highest p-3 rounded-lg border border-outline-variant">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-xs text-on-surface-variant font-medium">Prompt Tokens</span>
+                        <span class="text-sm font-mono text-inverse-surface font-bold">1,240</span>
+                    </div>
+                    <div class="w-full bg-surface-container-lowest h-1.5 rounded-full overflow-hidden">
+                        <div class="bg-primary h-full rounded-full" style="width: 45%;"></div>
+                    </div>
+                </div>
+                <div class="bg-surface-container-highest p-3 rounded-lg border border-outline-variant">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-xs text-on-surface-variant font-medium">Completion Tokens</span>
+                        <span class="text-sm font-mono text-inverse-surface font-bold">892</span>
+                    </div>
+                    <div class="w-full bg-surface-container-lowest h-1.5 rounded-full overflow-hidden">
+                        <div class="bg-tertiary h-full rounded-full" style="width: 30%;"></div>
+                    </div>
+                </div>
+                <div class="bg-surface-container-highest p-3 rounded-lg border border-outline-variant">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-xs text-on-surface-variant font-medium">Total Tokens</span>
+                        <span class="text-sm font-mono text-inverse-surface font-bold">2,132</span>
+                    </div>
+                    <div class="w-full bg-surface-container-lowest h-1.5 rounded-full overflow-hidden">
+                        <div class="bg-primary-fixed-dim h-full rounded-full" style="width: 65%;"></div>
+                    </div>
+                </div>
+                <div
+                    class="flex items-center justify-between p-3 border border-outline-variant rounded-lg bg-surface-container-lowest">
+                    <span class="text-xs text-on-surface-variant font-medium flex items-center gap-1">
+                        <span class="material-symbols-outlined text-xs text-tertiary" data-icon="bolt">bolt</span>
+                        TPS
+                    </span>
+                    <span class="text-lg font-mono text-tertiary font-bold">342.5</span>
+                </div>
+            </div>
+            <!-- Footer Tabs -->
+            <div class="border-t border-outline-variant pt-4 mb-4 space-y-1">
+                <a class="flex items-center gap-3 px-3 py-2 rounded-md text-on-surface-variant hover:bg-surface-container-highest hover:text-on-surface transition-all duration-150 text-sm font-medium"
+                    href="#">
+                    <span class="material-symbols-outlined text-sm" data-icon="description">description</span>
+                    Docs
+                </a>
+                <a class="flex items-center gap-3 px-3 py-2 rounded-md text-on-surface-variant hover:bg-surface-container-highest hover:text-on-surface transition-all duration-150 text-sm font-medium"
+                    href="#">
+                    <span class="material-symbols-outlined text-sm text-tertiary"
+                        data-icon="check_circle">check_circle</span>
+                    Status
+                </a>
+            </div>
+            <button
+                class="w-full mt-auto py-2.5 px-4 border border-outline-variant hover:border-error hover:text-error text-on-surface-variant rounded font-medium text-sm transition-colors flex justify-center items-center gap-2">
+                <span class="material-symbols-outlined text-sm" data-icon="delete">delete</span>
+                Borrar Conversación
+            </button>
+        </aside>
+        <!-- Main Chat Area -->
+        <main class="flex-1 flex flex-col bg-background relative h-full">
+            <!-- Messages Scroll Area -->
+            <div class="flex-1 overflow-y-auto p-4 md:p-8 space-y-8 scroll-smooth" id="chat-container">
+                <!-- System/Welcome Message -->
+                <div class="flex flex-col items-center justify-center h-32 mb-8 opacity-60">
+                    <span class="material-symbols-outlined text-4xl mb-2 text-primary" data-icon="hub">hub</span>
+                    <h3 class="text-lg font-headline font-semibold text-on-surface tracking-tight">Obsidian Terminal
+                        Ready</h3>
+                    <p class="text-sm text-on-surface-variant font-mono">Connected to Llama-3-70b-Instruct via Groq</p>
+                </div>
+                <!-- AI Message -->
+                <div class="flex gap-4 max-w-4xl mx-auto w-full">
+                    <div
+                        class="flex-shrink-0 w-8 h-8 rounded-md bg-surface-container border border-outline-variant flex items-center justify-center">
+                        <span class="material-symbols-outlined text-primary text-sm" data-icon="memory">memory</span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="text-xs font-medium text-on-surface-variant mb-1 font-mono">Obsidian AI</div>
+                        <div
+                            class="bg-surface-container rounded-lg p-4 border border-outline-variant text-on-surface text-sm leading-relaxed shadow-sm">
+                            <p>Hello. I am connected and ready to assist with code generation, analysis, or general
+                                queries. System inference is currently optimized for high-throughput responses.</p>
+                            <p class="mt-2">How can I help you today?</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- User Message -->
+                <div class="flex gap-4 max-w-4xl mx-auto w-full flex-row-reverse">
+                    <div
+                        class="flex-shrink-0 w-8 h-8 rounded-md bg-surface-container-highest border border-outline-variant flex items-center justify-center">
+                        <span class="material-symbols-outlined text-inverse-surface text-sm"
+                            data-icon="person">person</span>
+                    </div>
+                    <div class="flex-1 min-w-0 flex flex-col items-end">
+                        <div class="text-xs font-medium text-on-surface-variant mb-1 font-mono">You</div>
+                        <div
+                            class="bg-primary rounded-lg p-4 text-on-primary text-sm leading-relaxed shadow-sm inline-block max-w-[85%] text-left">
+                            <p>Write a fast sorting algorithm in Rust, explain its time complexity, and provide a usage
+                                example.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- AI Message (Code Response) -->
+                <div class="flex gap-4 max-w-4xl mx-auto w-full">
+                    <div
+                        class="flex-shrink-0 w-8 h-8 rounded-md bg-surface-container border border-outline-variant flex items-center justify-center">
+                        <span class="material-symbols-outlined text-primary text-sm" data-icon="memory">memory</span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="text-xs font-medium text-on-surface-variant mb-1 font-mono">Obsidian AI <span
+                                class="text-tertiary ml-2">124ms</span></div>
+                        <div
+                            class="bg-surface-container rounded-lg border border-outline-variant text-on-surface text-sm leading-relaxed shadow-sm overflow-hidden">
+                            <div class="p-4 border-b border-outline-variant">
+                                <p>I'll provide an implementation of Quicksort in Rust. Quicksort is highly efficient
+                                    for general-purpose sorting.</p>
+                            </div>
+                            <div class="bg-surface-container-lowest">
+                                <div
+                                    class="flex items-center justify-between px-4 py-2 border-b border-outline-variant bg-surface-dim">
+                                    <span class="text-xs font-mono text-on-surface-variant">rust</span>
+                                    <button
+                                        class="text-xs text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1">
+                                        <span class="material-symbols-outlined text-xs"
+                                            data-icon="content_copy">content_copy</span> Copy
+                                    </button>
+                                </div>
+                                <pre class="m-0 border-0 rounded-none"><code class="text-sm">fn quicksort&lt;T: Ord&gt;(arr: &amp;mut [T]) {
+    let len = arr.len();
+    if len &lt; 2 {
+        return;
+    }
+    
+    let pivot_index = partition(arr);
+    
+    // Recursively sort elements before and after pivot
+    quicksort(&amp;mut arr[0..pivot_index]);
+    quicksort(&amp;mut arr[pivot_index + 1..len]);
+}
+
+fn partition&lt;T: Ord&gt;(arr: &amp;mut [T]) -&gt; usize {
+    let len = arr.len();
+    let pivot_index = len / 2;
+    arr.swap(pivot_index, len - 1);
+    
+    let mut i = 0;
+    for j in 0..len - 1 {
+        if arr[j] &lt;= arr[len - 1] {
+            arr.swap(i, j);
+            i += 1;
+        }
+    }
+    
+    arr.swap(i, len - 1);
+    i
+}</code></pre>
+                            </div>
+                            <div class="p-4 border-t border-outline-variant bg-surface-container">
+                                <h4 class="font-bold text-inverse-surface mb-2 tracking-tight">Time Complexity Analysis:
+                                </h4>
+                                <ul class="list-disc pl-5 space-y-1 text-on-surface-variant mb-4">
+                                    <li><strong class="text-on-surface">Average Case:</strong> O(n log n)</li>
+                                    <li><strong class="text-on-surface">Best Case:</strong> O(n log n)</li>
+                                    <li><strong class="text-on-surface">Worst Case:</strong> O(n²) - occurs when the
+                                        array is already sorted and we pick the last element as pivot.</li>
+                                    <li><strong class="text-on-surface">Space Complexity:</strong> O(log n) auxiliary
+                                        stack space.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Loading State Indicator (Hidden by default, shown for prototype context) -->
+                <div class="flex gap-4 max-w-4xl mx-auto w-full pb-4">
+                    <div
+                        class="flex-shrink-0 w-8 h-8 rounded-md bg-surface-container border border-outline-variant flex items-center justify-center">
+                        <span class="material-symbols-outlined text-primary text-sm animate-pulse"
+                            data-icon="memory">memory</span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="text-xs font-medium text-on-surface-variant mb-1 font-mono">Obsidian AI is thinking
+                        </div>
+                        <div
+                            class="bg-surface-container rounded-lg p-4 border border-outline-variant shadow-sm inline-block">
+                            <div class="typing-indicator flex items-center h-4">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Spacer for input area -->
+                <div class="h-24"></div>
+            </div>
+            <!-- Input Area -->
+            <div
+                class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-background via-background to-transparent pt-10 pb-6 px-4 md:px-8 z-20">
+                <div class="max-w-4xl mx-auto relative group">
+                    <div
+                        class="absolute -inset-0.5 bg-primary/20 rounded-xl blur opacity-0 group-focus-within:opacity-100 transition duration-500">
+                    </div>
+                    <div
+                        class="relative bg-surface-container rounded-xl border border-outline-variant focus-within:border-primary shadow-lg overflow-hidden flex flex-col">
+                        <textarea
+                            class="w-full bg-transparent border-none focus:ring-0 text-on-surface resize-none p-4 min-h-[60px] max-h-[200px] text-sm placeholder:text-on-surface-variant/50"
+                            placeholder="Message Obsidian AI... (Press '/' for commands)" rows="1"></textarea>
+                        <div class="flex justify-between items-center px-3 pb-3 pt-1">
+                            <div class="flex items-center gap-1">
+                                <button
+                                    class="text-on-surface-variant hover:text-primary transition-colors p-1.5 rounded-md hover:bg-surface-container-highest tooltip"
+                                    title="Attach file">
+                                    <span class="material-symbols-outlined text-[20px]"
+                                        data-icon="attach_file">attach_file</span>
+                                </button>
+                                <button
+                                    class="text-on-surface-variant hover:text-primary transition-colors p-1.5 rounded-md hover:bg-surface-container-highest tooltip"
+                                    title="Search web">
+                                    <span class="material-symbols-outlined text-[20px]"
+                                        data-icon="travel_explore">travel_explore</span>
+                                </button>
+                            </div>
+                            <button
+                                class="bg-primary hover:bg-primary-fixed-dim text-on-primary p-1.5 rounded-lg transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                                <span class="material-symbols-outlined" data-icon="send">send</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="text-center mt-2">
+                        <span class="text-[10px] text-on-surface-variant font-mono">Obsidian AI may produce inaccurate
+                            information about people, places, or facts.</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script>
+        // Simple auto-resize for textarea
+        const textarea = document.querySelector('textarea');
+        textarea.addEventListener('input', function () {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+            if (this.scrollHeight > 200) {
+                this.style.overflowY = 'auto';
+            } else {
+                this.style.overflowY = 'hidden';
+            }
+        });
+
+        // Scroll to bottom on load
+        window.onload = function () {
+            const chatContainer = document.getElementById('chat-container');
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        };
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,178 @@
+/**
+ * @file app/globals.css
+ * @description Estilos globales CSS, directivas de Tailwind, animaciones del indicador de carga,
+ * barras de desplazamiento personalizadas y reglas de inversión de color para la alternancia de tema (Modo Oscuro / Modo Claro).
+ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+body {
+  background-color: #09090b;
+  color: #fafafa;
+  font-family: 'Geist', sans-serif;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* --- ESTILOS ADAPTATIVOS PARA MODO CLARO (LIGHT THEME) --- */
+html.light {
+  color-scheme: light;
+}
+
+html.light body {
+  background-color: #f4f4f5;
+  color: #b5b5c0;
+}
+
+html.light .bg-background {
+  background-color: #f4f4f5 !important;
+}
+
+html.light .bg-surface-container {
+  background-color: #ffffff !important;
+}
+
+html.light .bg-surface-container-highest {
+  background-color: #e4e4e7 !important;
+}
+
+html.light .bg-surface-container-lowest {
+  background-color: #ffffff !important;
+}
+
+html.light .bg-surface-dim {
+  background-color: #e4e4e7 !important;
+}
+
+html.light .text-on-surface {
+  color: #09090b !important;
+}
+
+html.light .text-on-surface-variant {
+  color: #52525b !important;
+}
+
+html.light .text-inverse-surface {
+  color: #18181b !important;
+}
+
+html.light .border-outline-variant {
+  border-color: #e4e4e7 !important;
+}
+
+html.light pre {
+  background-color: #f4f4f5 !important;
+  border-color: #e4e4e7 !important;
+}
+
+html.light code {
+  color: #18181b !important;
+}
+
+/* Iconos de Google Material Symbols Outlined */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+.material-symbols-outlined.fill {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* Custom scrollbar para tema oscuro */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #a7a7b8;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #aaaab4;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #52525b;
+}
+
+html.light ::-webkit-scrollbar-track {
+  background: #f4f4f5;
+}
+
+html.light ::-webkit-scrollbar-thumb {
+  background: #d4d4d8;
+}
+
+/* Animación de tres puntos "pensando..." (typing-indicator) */
+.typing-indicator span {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background-color: #a78bfa;
+  border-radius: 50%;
+  animation: bounce 1.4s infinite ease-in-out both;
+  margin: 0 2px;
+}
+
+.typing-indicator span:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.typing-indicator span:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+.typing-indicator span:nth-child(3) {
+  animation-delay: 0s;
+}
+
+@keyframes bounce {
+  0%,
+  80%,
+  100% {
+    transform: scale(0);
+  }
+  40% {
+    transform: scale(1);
+  }
+}
+
+/* Animación suave de aparición para el modal */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.15s ease-out forwards;
+}
+
+pre {
+  background-color: #09090b;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #27272a;
+  overflow-x: auto;
+}
+
+code {
+  font-family: monospace;
+  color: #fafafa;
+}
